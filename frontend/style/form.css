@@ -1,0 +1,98 @@
+.complex-form{
+    margin-top:20px;
+    border-radius: 10px;
+    border: 2px #3C3D3F solid;
+    padding: 5px 10px 10px 10px;
+    display:flex;
+    flex-direction: column;
+}
+
+.complex-form .form-title{
+    background-color: #3C3D3F;
+    margin: -5px -10px 20px -10px;
+    padding:10px 0px 10px 25px;
+    color:white;
+    border-radius: 7px 7px 0px 0px;
+
+    font-size:20px;
+    font-weight:bold;
+}
+
+.complex-form .form-radio{
+    display:flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.complex-form .form-element{
+     margin-bottom:10px;
+     font-size: 20px;
+     border-radius:10px;
+     padding:5px 10px 5px 10px;
+}
+
+.complex-form .form-buttons{
+    display:flex;
+    margin-top: 0px;
+    margin-left: auto;
+    padding-bottom: 5px;
+}
+
+.hidden-form-element {
+    display: none;
+}
+
+#add-comment-form #post-content {
+    font-family: Arial;
+}
+
+#add-comment-form .form-title {
+    margin: -5px -10px 20px -10px;
+}
+
+/* This snippet of code was generated using: http://css3buttongenerator.com/ */
+
+.btn{
+    border-radius:10px;
+    text-align:center;
+    font-size: 20px;
+    color: #3C3D3F;
+    background: #ffffff;
+    border: 2px #3C3D3F solid;
+    padding: 10px 20px 10px 20px;
+}
+
+.btn:hover {
+  background: #3C3D3F;
+  color: #ffffff;
+}
+
+.toggle-btn {
+    width: 150px;
+}
+
+textarea {
+    font-family: Arial;
+}
+
+#header-grid {
+    display: grid;
+    grid-template-columns: auto 50px;
+    grid-template-rows: 50px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.collapse-icon {
+    background-image: url('../media/collapse.png');
+    align-self: start;
+}
+
+.expand-icon {
+    background-image: url('../media/expand.png');
+    align-self: start;
+}
+
+#header-grid .title {
+    align-self: center;
+}

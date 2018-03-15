@@ -1,0 +1,53 @@
+#comment-section {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: auto;
+    max-width: 800px;
+}
+
+.comments-page-title {
+    padding-top: 10px;
+    font-size: 20px;
+}
+
+.comment {
+    margin-left: 50px;
+    margin-top: 20px;
+    border-radius: 25px;
+    border: 2px solid;
+    padding: 0px 20px 0px 20px;
+}
+
+.comment-header {
+    display: grid;
+    grid-template-columns: auto 120px 50px;
+    height: 50px;
+}
+
+.comment-author {
+    align-self: center;
+}
+
+.comment-date {
+    align-self: center;
+}
+
+.comment-content {
+    padding-bottom: 15px;
+}
+
+.comment-page-icons {
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-top: 10px;
+    display: grid;
+    grid-template-columns: auto 50px;
+}
+
+.next-page-icon {
+    background-image: url('../media/next.png');
+}
+
+.previous-page-icon {
+    background-image: url('../media/back.png');
+}

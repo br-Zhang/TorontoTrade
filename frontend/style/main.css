@@ -1,0 +1,61 @@
+html {overflow: -moz-scrollbars-vertical;}
+
+body {
+	background: #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #3C3D3F;
+    text-align: left;
+    margin: auto;
+}
+
+header #title{
+    font-size: 14px;
+}
+
+.header-btn{
+    text-decoration:none;
+    font-size: 16px;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+footer{
+    margin-top: 20px;
+    text-align:center;
+}
+
+.alert{
+    color: red;
+}
+
+.icon{
+    width: 50px;
+    height: 50px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 75%;
+	cursor: pointer;
+}
+
+.delete-comment-icon{
+    background-image: url('../media/delete-icon.png');
+}
+
+.hidden{
+	visibility: hidden;
+	position: absolute;
+}
+
+.bg-blue {
+	background-color: #3b5998;
+}
+
+.credit {
+	color: #365899;
+	cursor: pointer;
+}
+
+.credit:hover {
+	text-decoration: underline;
+}
