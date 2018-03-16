@@ -5,7 +5,17 @@ const Currency = mongoose.Types.Currency;
 
 const listingSchema = new mongoose.Schema({
     title: String,
-    price: {type: Currency},
+    price: {
+        type: Currency,
+    },
+    category: String,
+    description: String,
+    updated: {
+        type: Date,
+        default: Date.now,
+    },
+    image_url: String,
+    image_id: String,
 });
 
 module.exports = mongoose.model('Listing', listingSchema);

@@ -3,7 +3,7 @@
 URL: https://torontotrade.herokuapp.com/
 
 ### Description
-TorontoTrade is a web application that offsers students at UofT a safe and secure place to buy and
+TorontoTrade is a web application that offers students at UofT a safe and secure place to buy and
 sell items along with other fellow alumni. We offer buying, selling, real-time updates of items for
 sale, chat clients for transaction verification and more for your trading needs.
 

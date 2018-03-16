@@ -79,6 +79,8 @@ app.use(session({
 
 app.use(function(req, res, next) {
     req.user = ('user' in req.session) ? req.session.user : null;
+    req.username = req.user ? req.user.username : null;
+    // console.log('HTTP request', req.method, req.url, req.body, req.username);
     return next();
 });
 
@@ -102,21 +104,21 @@ mdb.once('open', function() {
     // 500 Internal Server Error if unable to retrieve or update users.
     app.post('/api/signup/', function(req, res, next) {
         if (!('username' in req.body)) {
-            return res.status(400).end('Username is missing');
+            return res.status(400).end('Username is missing.');
         }
         if (!('password' in req.body)) {
-            return res.status(400).end('Password is missing');
+            return res.status(400).end('Password is missing.');
         }
         const username = req.body.username;
         const password = req.body.password;
 
         User.findOne({username: username}, function(err, user) {
             if (err) {
-                return res.status(500).end('Unable to retrieve users');
+                return res.status(500).end('Unable to retrieve users.');
             }
             if (user) {
                 return res.status(409).end(
-                    'Username ' + username + ' already exists'
+                    'Username ' + username + ' already exists.'
                 );
             }
 
@@ -128,7 +130,7 @@ mdb.once('open', function() {
                 {username: username, hash: hash, salt: salt},
                 {upsert: true}, function(err) {
                 if (err) return res.status(500).end(err);
-                return res.json('User ' + username + ' signed up');
+                return res.json('User ' + username + ' signed up.');
             });
         });
     });
@@ -157,18 +159,18 @@ mdb.once('open', function() {
     // 500 Internal Server Error if unable to retrieve user.
     app.post('/api/signin/', function(req, res, next) {
         if (!('username' in req.body)) {
-            return res.status(400).end('Username is missing');
+            return res.status(400).end('Username is missing.');
         }
         if (!('password' in req.body)) {
-            return res.status(400).end('Password is missing');
+            return res.status(400).end('Password is missing.');
         }
         const username = req.body.username;
         const password = req.body.password;
 
         // Retrieve user from the database
         User.findOne({username: username}, function(err, user) {
-            if (err) return res.status(500).end('Unable to retrieve users');
-            if (!user) return res.status(401).end('Invalid username/password');
+            if (err) return res.status(500).end('Unable to retrieve users.');
+            if (!user) return res.status(401).end('Invalid username/password.');
 
             if (user.hash !== generateHash(password, user.salt)) {
                 // Invalid password
@@ -187,8 +189,77 @@ mdb.once('open', function() {
         });
     });
 
+
+    // Create a new listing.
+    //
+    // Returns:
+    // 200 OK containing JSON object of the listing that was created if
+    // successful.
+    // 500 Internal Server Error if failed to create listing.
+    app.post('/api/listings/', upload.single('picture'), isAuthenticated,
+    function(req, res, next) {
+        cloudinary.v2.uploader.upload(req.file.path, {folder: 'uploads'},
+        function(err, result) {
+            const newListing = new Listing({
+                title: req.body.title,
+                price: req.body.price,
+                category: req.body.category,
+                description: req.body.description,
+                image_url: result.url,
+                image_id: result.public_id,
+            });
+            newListing.save(function(err, listing) {
+                if (err) {
+                    return res.status(500).end('Unable to create listing.');
+                }
+                return res.json(listing);
+            });
+        });
+    });
+
+    // Retrieves an existing listing.
+    //
+    // Returns:
+    // 200 OK containing JSON object of the listing if successful.
+    // 404 Not Found if the id does not correspond to any existing listing.
+    // 500 Internal Server Error if failed to retrieve listings.
+    app.get('/api/listings/:id', isAuthenticated, function(req, res, next) {
+        Listing.findOne({_id: req.params.id}, function(err, listing) {
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (listing == null) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+            return res.json(listing);
+        });
+    });
+
+    // Retrieves the picture of the listing.
+    //
+    // Returns:
+    // 200 OK containing picture of the listing if successful.
+    // 404 Not Found if the id does not correspond to any existing listing.
+    // 500 Internal Server Error if failed to retrieve listings.
+    app.get('/api/listings/:id/picture/', isAuthenticated,
+    function(req, res, next) {
+        Listing.findOne({_id: req.params.id}, function(err, listing) {
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (doc == null) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+            request(listing.image_url).pipe(res);
+        });
+    });
+
     const http = require('http');
-	const PORT = process.env.PORT || config.port;
+    const PORT = process.env.PORT || config.port;
     http.createServer(app).listen(PORT, function(err) {
         if (err) console.log(err);
         else console.log('HTTP server on http://localhost:%s', PORT);
