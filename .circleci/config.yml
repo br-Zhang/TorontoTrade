@@ -22,5 +22,7 @@ jobs:
       - run: npm install
       # run tests!
       - run: npm test
+      - store_test_results:
+            path: /tmp/test-results
 
 
