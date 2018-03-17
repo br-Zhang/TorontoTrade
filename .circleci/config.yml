@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - checkout
-      - run: cp config.example.json > config.json
+      - run: cp config.example.json config.json
       - run: npm install
       # run tests!
       - run: npm test
