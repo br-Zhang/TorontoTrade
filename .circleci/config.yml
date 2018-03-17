@@ -21,9 +21,5 @@ jobs:
       - run: cp config.example.json config.json
       - run: npm install
       # run tests!
-      - run: mkdir tmp
-      - run: npm test > tmp/test-results
-      - store_test_results:
-            path: tmp/test-results
-
+      - run: npm test
 
