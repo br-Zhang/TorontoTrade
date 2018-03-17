@@ -18,6 +18,7 @@ jobs:
 
     steps:
       - checkout
+      - run: echo "" >> config.json
       - run: npm install
       # run tests!
       - run: npm test
