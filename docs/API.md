@@ -42,6 +42,7 @@ Sign in as an existing user.
 	- Body: Username/Password is missing.
 - Response: 401
 	- Body: Invalid username/password.
+	- Body: User not verified.
 - Response: 500
 	- Body: Unable to retrieve users.
 
@@ -82,6 +83,7 @@ Create a new listing.
 		- image_url: (string) The URL of the listing image
 		- image_id: (string) The public_id of the listing image (on Cloudinary)
 		- userId: (ObjectID) The ObjectID of the user that created the listing
+		- verified: (Boolean) Whether the account has been verified. Initialized to false.
 - Response: 500
 	- An error occurred trying to save the listing to the database.
 	- Body: Unable to create listing

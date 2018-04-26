@@ -20,7 +20,7 @@ const listingSchema = new mongoose.Schema({
 });
 
 listingSchema.methods.priceToString = function() {
-    return (this.get('price' ) / 100).toFixed(2);
+    return (this.get('price') / 100).toFixed(2);
 };
 
 module.exports = mongoose.model('Listing', listingSchema);

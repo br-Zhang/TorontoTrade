@@ -1,32 +1,45 @@
 .listing-details {
+    margin-top: 15px;
     font-family: Helvetica, sans-serif;
     font-size: normal;
+    display: grid;
+	grid-template-columns: 0.4fr 0.6fr;
 }
 
 .listing-details .listing-image {
-    width: 200px;
-    height: 200px;
+    padding-right: 15px;
+    width: 100%;
+    height: auto;
     background-position: center;
     background-repeat: no-repeat;
     background-size: 75%;
-    cursor: pointer;
 }
 
-.listing-details .listing-title {
+.listing-info .listing-title {
     margin-top: 5px;
-    color: black;
+    color: #111;
+    font-size: 20px;
 }
 
-.listing-details a:hover {
+.listing-info .listing-creater {
+    font-size: 14px;
+}
+
+.listing-info a:hover {
     text-decoration: none;
 }
 
-.listing-details .listing-title:hover {
-    text-decoration: underline;
-}
-
-.listing-details .listing-price {
+.listing-info .listing-price {
     color: black;
     font-size: 17px;
     font-weight: bold;
+}
+
+.buy-btn {
+    margin-top: 15px;
+    background-color: rgb(0, 80, 157);
+    color: white;
+    font-weight: bold;
+    width: 124px;
+    padding: 4px 0px 4px 0px;
 }

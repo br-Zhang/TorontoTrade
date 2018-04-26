@@ -131,7 +131,8 @@ mdb.once('open', function() {
 
                 // insert new user into the database
                 User.update({username: username},
-                    {username: username, hash: hash, salt: salt, email: email},
+                    {username: username, hash: hash, salt: salt, email: email,
+                     verified: false},
                     {upsert: true}, function(err) {
                     if (err) return res.status(500).end(err);
                     return res.json(
@@ -182,6 +183,10 @@ mdb.once('open', function() {
             if (user.hash !== generateHash(password, user.salt)) {
                 // Invalid password
                 return res.status(401).end('Invalid username/password.');
+            }
+
+            if (!user.verified) {
+                return res.status(401).end('User not verified.');
             }
 
             // start a session
@@ -370,7 +375,8 @@ mdb.once('open', function() {
 
     const http = require('http');
     const PORT = process.env.PORT || config.port;
-    http.createServer(app).listen(PORT, function(err) {
+    const server = http.createServer(app);
+    server.listen(PORT, function(err) {
         if (err) console.log(err);
         else console.log('HTTP server on http://localhost:%s', PORT);
     });

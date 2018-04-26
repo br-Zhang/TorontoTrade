@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     email: String,
+    verified: Boolean,
 });
 
 userSchema.statics.getAllUsernames = function(name, cb) {
@@ -13,6 +14,6 @@ userSchema.statics.getAllUsernames = function(name, cb) {
             return user._id;
         }));
     });
-  };
+};
 
 module.exports = mongoose.model('User', userSchema);

@@ -15,17 +15,18 @@ html
 			nav
 		|
 		.container-fluid.main-container
-			div(class='well listing-well')
-				div(class='listing-details')
-					img(
-						class='listing-image'
-						src=`/api/listings/${id}/picture/`
-						alt=`${title}`
-					)
+			div(class='listing-details')
+				img(
+					class='listing-image'
+					src=`/api/listings/${id}/picture/`
+					alt=`${title}`
+				)
+				div(class='listing-info')
 					div(class='listing-title')= title
 					div(class='listing-creater')=`by ${username}`
-					div(class='listing-price')= price
+					div(class='listing-price')=`Price: $ ${price}`
 					div(class='listing-description')= description
+					div(class='btn buy-btn')= `Buy It Now`
 		|
 		footer
 		|
