@@ -20,14 +20,6 @@
     width: 100%;
 }
 
-#create-listing-form .divider {
-    border: 0;
-    content: "";
-    background: -webkit-linear-gradient(left,#fff 0%,#eee 15%,#eee 85%,#fff 100%);
-    height: 2px;
-    margin-bottom: 10px;
-}
-
 #create-listing-form #price {
     max-width: 200px;
 }

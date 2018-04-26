@@ -81,6 +81,7 @@ const mdb = mongoose.connection;
 
 const Listing = require('./models/listing-model');
 const User = require('./models/user-model');
+const Order = require('./models/order-model');
 
 mdb.on('error', console.error.bind(console, 'connection error:'));
 mdb.once('open', function() {
@@ -284,39 +285,6 @@ mdb.once('open', function() {
         });
     });
 
-    app.get('/signin', function(req, res, next) {
-        res.render('signin', { });
-    });
-
-    app.get('/listings/:id/details/', function(req, res, next) {
-        Listing.findById(req.params.id).exec(function(err, listing) {
-            // TODO: Update to display better error message. Possibly passing
-            // control to another function with an error.pug and sending
-            // this error message.
-            if (err) {
-                return res.status(500).end('Unable to retrieve listings.');
-            }
-            if (listing == null) {
-                return res.status(404).end(
-                    'No listing with id: ' + req.params.id + ' exists.'
-                );
-            }
-            User.findById(listing.userId).exec(function(err, user) {
-                const username = (err || user == null) ? '' : user.username;
-                return res.render('details', {
-                    id: listing.id,
-                    title: listing.title,
-                    price: listing.priceToString(),
-                    category: listing.category,
-                    description: listing.description,
-                    image_url: listing.url,
-                    image_id: listing.public_id,
-                    username: username,
-                });
-            });
-        });
-    });
-
     app.put('/api/listings/:id', upload.single('picture'), isAuthenticated,
     function(req, res, next) {
         // Retrieve user from the database
@@ -369,6 +337,81 @@ mdb.once('open', function() {
             }
             return res.json({
                 _id: req.params.id,
+            });
+        });
+    });
+
+    // Pug rendering
+
+    app.get('/signin', function(req, res, next) {
+        res.render('signin', { });
+    });
+
+    app.get('/listings/:id/details/', function(req, res, next) {
+        Listing.findById(req.params.id).exec(function(err, listing) {
+            // TODO: Update to display better error message. Possibly passing
+            // control to another function with an error.pug and sending
+            // this error message.
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (listing == null) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+            User.findById(listing.userId).exec(function(err, user) {
+                const username = (err || user == null) ? '' : user.username;
+                return res.render('details', {
+                    id: listing.id,
+                    title: listing.title,
+                    price: listing.priceToString(),
+                    category: listing.category,
+                    description: listing.description,
+                    image_url: listing.url,
+                    image_id: listing.public_id,
+                    username: username,
+                });
+            });
+        });
+    });
+
+    app.get('/purchase/:id', isAuthenticated, function(req, res, next) {
+        // TODO: Display confirmation page
+        Listing.findById(req.params.id).exec(function(err, listing) {
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (listing == null) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+
+            // Create order if no order already exists for the listing
+            Order.findOne({listingId: listing.id}, function(err, order) {
+                if (err) {
+                    return res.status(500).end('Unable to retrieve orders');
+                }
+                if (order != null) {
+                    return res.status(400).end('The listing has been sold.');
+                }
+
+                const newOrder = new Order({
+                    buyerId: req.user.id,
+                    sellerId: listing.userId,
+                    listingId: listing.id,
+                });
+                newOrder.save(function(err, order) {
+                    if (err) {
+                        console.log(err);
+                        return res.status(500).end('Unable to create order.');
+                    }
+                    return res.render('purchase', {
+                        id: order.id,
+                        listingId: order.listingId,
+                    });
+                });
             });
         });
     });

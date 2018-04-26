@@ -1,0 +1,22 @@
+.purchase-details {
+    margin-top: 30px;
+    font-family: Helvetica, sans-serif;
+    font-size: normal;
+}
+
+.purchase-details .purchase-confirmation {
+    font-size: 24px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.purchase-details .thank-you {
+    font-family: Arial;
+    text-align: center;
+    font-size: 24px;
+}
+
+.purchase-details .order-number {
+    font-size: 16px;
+    text-align: center;
+}

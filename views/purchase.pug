@@ -9,25 +9,18 @@ html
 		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin='anonymous')
 		|       
 		link(href='/style/main.css', rel='stylesheet', type='text/css')
-		link(href='/style/listing-details.css', rel='stylesheet', type='text/css')
+		link(href='/style/purchase-details.css', rel='stylesheet', type='text/css')
 	body
 		header
 			nav
 		|
 		.container-fluid.main-container
-			div(class='listing-details')
-				img(
-					class='listing-image'
-					src=`/api/listings/${id}/picture/`
-					alt=`${title}`
-				)
-				div(class='listing-info')
-					div(class='listing-title')= title
-					div(class='listing-creater')=`by ${username}`
-					div(class='line-divider')
-					div(class='listing-price')=`Price: $ ${price}`
-					div(class='listing-description')= description
-					div(class='btn buy-btn' id=`${id}`)= `Buy It Now`
+			div(class='purchase-details')
+				div(class='purchase-info')
+					div(class='purchase-confirmation')= `YOUR ORDER HAS BEEN RECEIVED.`
+					div(class='divider')
+					div(class='thank-you')= `THANK YOU FOR YOUR PURCHASE!`
+					div(class='order-number')= `Your order ID is: ${id}.`
 		|
 		footer
 		|
@@ -37,5 +30,5 @@ html
 		// Latest compiled and minified JavaScript
 		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa', crossorigin='anonymous')
 		|      
-		script(src='/js/details.js')
+		script(src='/js/purchase.js')
 		script(src='/js/api.js')

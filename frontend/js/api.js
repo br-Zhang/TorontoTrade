@@ -2,22 +2,6 @@
 const api = (function() {
     const module = {};
 
-    /*  ******* Data types *******
-        image objects must have at least the following attributes:
-            - (String) _id
-            - (String) title
-            - (String) author
-            - (Date) date
-
-        comment objects must have the following attributes
-            - (String) _id
-            - (String) imageId
-            - (String) author
-            - (String) content
-            - (Date) date
-
-    ****************************** */
-
     /**
      * This callback type is called `Callback` and is displayed as a
      * global symbol.
