@@ -344,7 +344,7 @@ mdb.once('open', function() {
     // TODO: Mark listing as sold. Create some sort of communication channel.
     app.post('/api/purchase/:id', isAuthenticated, function(req, res, next) {
 
-    };
+    });
 
     // Deletes an existing listing.
     //
