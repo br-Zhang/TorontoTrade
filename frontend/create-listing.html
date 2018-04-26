@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>TorontoTrade</title>
+    <link rel="shortcut icon" href="media/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <link href="style/main.css" rel="stylesheet" type="text/css"/>
+    <link href="style/form.css" rel="stylesheet" type="text/css"/>
+    <link href="style/create-listing.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <header>
+        <nav></nav>
+    </header>
+
+    <div class="main-content container-fluid">
+        <div class="create-listing-container container-fluid">
+            <div id="notifications"></div>
+            <form id="create-listing-form" class="basic-form">
+                <div class="listing-details well">
+                    <div class="well-title">Listing Details</div>
+                    <div class="divider"></div>
+                    <label for="category">Category</label>
+                    <input type="text" class="form-control" id="category" placeholder="" value="" required/>
+                    <label for="title">Title</label>
+                    <input type="text" class="form-control" id="title" placeholder="" value="" required/>
+                    <label for="picture-file">Photo</label>
+                    <input type="file" name="picture" id="picture-file" accept="image/*" required/>
+                    <label for="description">Description</label>
+                    <textarea rows="5" id="description" class="form-control" name="description" required></textarea>
+                </div>
+                <div class="pricing-details well">
+                    <div class="well-title">Pricing Details</div>
+                    <div class="divider"></div>
+                    <label for="price">Price</label>
+                    <input type="text" class="form-control" id="price" placeholder="" value="" required/>
+                </div>
+                <input id="submit-btn" type="submit" class="btn"/>
+            </form>
+        </div>
+    </div>
+
+    <footer></footer>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+    <script src="js/api.js"></script>
+    <script src="js/create-listing.js"></script>
+</body>
+</html>

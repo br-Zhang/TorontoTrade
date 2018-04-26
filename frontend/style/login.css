@@ -1,0 +1,48 @@
+.login-container {
+    max-width: 600px;
+}
+
+.login-title {
+    border-radius: 7px 7px 0px 0px;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.login-form-element {
+    height: 40px;
+    padding: 0px 10px 0px 10px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.login-container #signin {
+    background-color: #e50914;
+    color: white;
+    min-width: 110px;
+    width: 100%;
+    line-height: 20px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px 0px 10px 0px;
+}
+
+.login-container #signup {
+    background-color: #008B8B;
+    color: white;
+    min-width: 110px;
+    width: 100%;
+    line-height: 20px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px 0px 10px 0px;
+}
+
+.signup-link {
+    line-height: 28px;
+    text-decoration: none;
+}

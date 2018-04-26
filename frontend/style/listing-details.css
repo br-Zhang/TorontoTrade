@@ -1,0 +1,32 @@
+.listing-details {
+    font-family: Helvetica, sans-serif;
+    font-size: normal;
+}
+
+.listing-details .listing-image {
+    width: 200px;
+    height: 200px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 75%;
+    cursor: pointer;
+}
+
+.listing-details .listing-title {
+    margin-top: 5px;
+    color: black;
+}
+
+.listing-details a:hover {
+    text-decoration: none;
+}
+
+.listing-details .listing-title:hover {
+    text-decoration: underline;
+}
+
+.listing-details .listing-price {
+    color: black;
+    font-size: 17px;
+    font-weight: bold;
+}

@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
     username: String,
     hash: String,
     salt: String,
+    email: String,
 });
 
 userSchema.statics.getAllUsernames = function(name, cb) {

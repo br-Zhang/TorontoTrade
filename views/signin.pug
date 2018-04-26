@@ -1,0 +1,31 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		title TorontoTrade
+		link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin='anonymous')
+		|     
+		link(href='style/main.css', rel='stylesheet', type='text/css')
+		link(href='style/form.css', rel='stylesheet', type='text/css')
+		link(href='style/login.css', rel='stylesheet', type='text/css')
+	body
+		header
+			nav
+		.container-fluid
+			.alert
+			.login-container.container-fluid
+				form
+					.login-title Sign In
+					input.login-form-element(type='text', name='username', placeholder='Username', required='')
+					input.login-form-element(type='password', name='password', placeholder='Password', required='')
+					button#signin.btn(name='action') Sign In
+					p
+						| Don't own an account? 
+						a.signup-link(href='/signup.html') Create a new account.
+		// jQuery (necessary for Bootstrap's JavaScript plugins)
+		script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+		// Latest compiled and minified JavaScript
+		script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa', crossorigin='anonymous')
+		|
+		script(src='js/api.js')
+		script(src='js/login.js')

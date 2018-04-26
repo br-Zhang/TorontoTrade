@@ -9,8 +9,9 @@ body {
     margin: auto;
 }
 
-header #title{
+header #nav-title{
     font-size: 14px;
+    margin-right: 0px;
 }
 
 .header-btn{
@@ -38,6 +39,16 @@ footer{
 	cursor: pointer;
 }
 
+.logo-icon{
+    width: 35px;
+    height: 35px;
+    background-position: center;
+    background-size: 75%;
+    margin-top: -2.5px;
+    margin-right: 5px;
+	cursor: pointer;
+}
+
 .delete-comment-icon{
     background-image: url('../media/delete-icon.png');
 }
@@ -58,4 +69,16 @@ footer{
 
 .credit:hover {
 	text-decoration: underline;
+}
+
+.well {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 15px 20px;
+    margin: 0px 0px 25px 0px;
+}
+
+.well-title {
+    font-size: large;
+    padding: 0px 0px 8px 0px;
 }

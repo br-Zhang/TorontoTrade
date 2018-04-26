@@ -3,65 +3,37 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>The Web Gallery</title>
+    <title>TorontoTrade</title>
+    <link rel="shortcut icon" href="media/favicon.ico" type="image/x-icon" />
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
     <link href="style/main.css" rel="stylesheet" type="text/css" />
     <link href="style/form.css" rel="stylesheet" type="text/css" />
-    <link href="style/image-gallery.css" rel="stylesheet" type="text/css" />
-    <link href="style/comment.css" rel="stylesheet" type="text/css" />
+    <link href="style/index.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-dark bg-blue">
-            <a href="/" class="navbar-brand abs" id="title">TorontoTrade</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse" id="collapsingNavbar">
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/credits.html">Credits</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a href="/login.html" id="signin-button" class="hidden nav-link">Sign in / Sign up</a>
-                        <a href="/api/signout/" id="signout-button" class="hidden nav-link">Sign out</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        <nav></nav>
     </header>
-    <div class="container-fluid">
-        <form id="add-image-form" class="complex-form hidden">
-
-            <div id="header-grid" class="form-title">
-                <div class="title">Add an image</div>
-                <div id="toggle-add-image-form" class="collapse-icon icon"></div>
-            </div>
-
-            <input type="text" id="image-title" class="form-element togglable" placeholder="Enter your image title" required />
-            <input type="file" name="picture" class="form-element togglable" accept="image/*" required/>
-            <button type="submit" class="btn togglable">Post your image</button>
+    <div class="container-fluid main-container">
+        <form id="search-form">
+            <input type="text" id="search" class="form-control togglable" placeholder="Search for anything" required />
         </form>
-        <div id="image-gallery"></div>
-        <div id="comment-section"></div>
-        <form id="add-comment-form" class="complex-form hidden">
-            <div class="form-title">Add a comment</div>
-            <textarea rows="5" id="comment-content" class="form-element" name="user-comment" placeholder="Enter your message" required></textarea>
-            <button type="submit" class="btn">Post your comment</button>
-        </form>
+        <div class="listing-container">
+            <div id="listing-grid"></div>
+        </div>
     </div>
-	<footer></footer>
+    <footer></footer>
+    
+    <!-- Libraries -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="js/script.js"></script>
+    
+    <script src="js/index.js"></script>
     <script src="js/api.js"></script>
 </body>
 </html>

@@ -10,8 +10,6 @@ app.use(express.static('frontend'));
 const multer = require('multer');
 const upload = multer({dest: path.join(__dirname, 'uploads')});
 
-const ObjectID = require('mongodb').ObjectID;
-
 const request = require('request');
 const config = require('./config.json');
 
@@ -29,16 +27,6 @@ cloudinary.config({
 
 // Connection URL
 const url = dbUsername + ':' + dbPassword + '@' + dbUrl;
-const monk = require('monk');
-const db = monk(url);
-
-db.then(() => {
-    console.log('Connected successfully to database');
-});
-
-const users = db.get('users', {castIds: false});
-const images = db.get('images', {castIds: false});
-const comments = db.get('comments', {castIds: false});
 
 const cookie = require('cookie');
 
@@ -80,9 +68,12 @@ app.use(session({
 app.use(function(req, res, next) {
     req.user = ('user' in req.session) ? req.session.user : null;
     req.username = req.user ? req.user.username : null;
-    // console.log('HTTP request', req.method, req.url, req.body, req.username);
+    console.log('HTTP request', req.method, req.url, req.body, req.username);
     return next();
 });
+
+app.set('views', './views');
+app.set('view engine', 'pug');
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://' + url);
@@ -94,6 +85,8 @@ const User = require('./models/user-model');
 mdb.on('error', console.error.bind(console, 'connection error:'));
 mdb.once('open', function() {
     console.log('Connected through mongoose!');
+
+    // TODO: Separate front end from API into two web applications
 
     // Sign up a new user.
     //
@@ -111,26 +104,40 @@ mdb.once('open', function() {
         }
         const username = req.body.username;
         const password = req.body.password;
+        const email = req.body.email;
 
-        User.findOne({username: username}, function(err, user) {
+        User.findOne({email: email}, function(err, user) {
             if (err) {
                 return res.status(500).end('Unable to retrieve users.');
             }
             if (user) {
                 return res.status(409).end(
-                    'Username ' + username + ' already exists.'
+                    'Email ' + email + ' already exists.'
                 );
             }
 
-            const salt = crypto.randomBytes(16).toString('base64');
-            const hash = generateHash(password, salt);
+            User.findOne({username: username}, function(err, user) {
+                if (err) {
+                    return res.status(500).end('Unable to retrieve users.');
+                }
+                if (user) {
+                    return res.status(409).end(
+                        'Username ' + username + ' already exists.'
+                    );
+                }
 
-            // insert new user into the database
-            User.update({username: username},
-                {username: username, hash: hash, salt: salt},
-                {upsert: true}, function(err) {
-                if (err) return res.status(500).end(err);
-                return res.json('User ' + username + ' signed up.');
+                const salt = crypto.randomBytes(16).toString('base64');
+                const hash = generateHash(password, salt);
+
+                // insert new user into the database
+                User.update({username: username},
+                    {username: username, hash: hash, salt: salt, email: email},
+                    {upsert: true}, function(err) {
+                    if (err) return res.status(500).end(err);
+                    return res.json(
+                        'User ' + username + ' has been signed up.'
+                    );
+                });
             });
         });
     });
@@ -174,7 +181,7 @@ mdb.once('open', function() {
 
             if (user.hash !== generateHash(password, user.salt)) {
                 // Invalid password
-                return res.status(401).end('Invalid username/password');
+                return res.status(401).end('Invalid username/password.');
             }
 
             // start a session
@@ -188,7 +195,6 @@ mdb.once('open', function() {
             return res.json('User ' + username + ' has been signed in.');
         });
     });
-
 
     // Create a new listing.
     //
@@ -207,6 +213,7 @@ mdb.once('open', function() {
                 description: req.body.description,
                 image_url: result.url,
                 image_id: result.public_id,
+                userId: req.user._id,
             });
             newListing.save(function(err, listing) {
                 if (err) {
@@ -223,7 +230,7 @@ mdb.once('open', function() {
     // 200 OK containing JSON object of the listing if successful.
     // 404 Not Found if the id does not correspond to any existing listing.
     // 500 Internal Server Error if failed to retrieve listings.
-    app.get('/api/listings/:id', isAuthenticated, function(req, res, next) {
+    app.get('/api/listings/:id', function(req, res, next) {
         Listing.findOne({_id: req.params.id}, function(err, listing) {
             if (err) {
                 return res.status(500).end('Unable to retrieve listings.');
@@ -237,19 +244,33 @@ mdb.once('open', function() {
         });
     });
 
+    app.get('/api/listings/', function(req, res, next) {
+        const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+        const limit = req.query.limit ? parseInt(req.query.limit) : 50;
+        Listing.find({})
+        .sort({'updated': -1})
+        .skip(offset)
+        .limit(limit)
+        .exec(function(err, listings) {
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            return res.json(listings);
+        });
+    });
+
     // Retrieves the picture of the listing.
     //
     // Returns:
     // 200 OK containing picture of the listing if successful.
     // 404 Not Found if the id does not correspond to any existing listing.
     // 500 Internal Server Error if failed to retrieve listings.
-    app.get('/api/listings/:id/picture/', isAuthenticated,
-    function(req, res, next) {
+    app.get('/api/listings/:id/picture/', function(req, res, next) {
         Listing.findOne({_id: req.params.id}, function(err, listing) {
             if (err) {
                 return res.status(500).end('Unable to retrieve listings.');
             }
-            if (doc == null) {
+            if (listing == null) {
                 return res.status(404).end(
                     'No listing with id: ' + req.params.id + ' exists.'
                 );
@@ -258,201 +279,99 @@ mdb.once('open', function() {
         });
     });
 
+    app.get('/signin', function(req, res, next) {
+        res.render('signin', { });
+    });
+
+    app.get('/listings/:id/details/', function(req, res, next) {
+        Listing.findById(req.params.id).exec(function(err, listing) {
+            // TODO: Update to display better error message. Possibly passing
+            // control to another function with an error.pug and sending
+            // this error message.
+            if (err) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (listing == null) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+            User.findById(listing.userId).exec(function(err, user) {
+                const username = (err || user == null) ? '' : user.username;
+                return res.render('details', {
+                    id: listing.id,
+                    title: listing.title,
+                    price: listing.priceToString(),
+                    category: listing.category,
+                    description: listing.description,
+                    image_url: listing.url,
+                    image_id: listing.public_id,
+                    username: username,
+                });
+            });
+        });
+    });
+
+    app.put('/api/listings/:id', upload.single('picture'), isAuthenticated,
+    function(req, res, next) {
+        // Retrieve user from the database
+        cloudinary.v2.uploader.upload(req.file.path, {folder: 'uploads'},
+        function(err, result) {
+            const newListing = new Listing({
+                title: req.body.title,
+                price: req.body.price,
+                category: req.body.category,
+                description: req.body.description,
+                image_url: result.url,
+                image_id: result.public_id,
+            });
+
+            let newData = newListing.toObject();
+            delete newData._id;
+
+            Listing.update({_id: req.params.id}, newData,
+            {upsert: true}, function(err, result) {
+                if (err) {
+                    return res.status(500).end('Unable to update listing.');
+                }
+                // Add n field (number of updated documents) to JSON response
+                newData.n=result.n;
+                return res.json(newData);
+            });
+        });
+    });
+
+    // TODO: Mark listing as sold. Create some sort of communication channel.
+    app.post('/api/purchase/:id', isAuthenticated, function(req, res, next) {
+
+    };
+
+    // Deletes an existing listing.
+    //
+    // Returns:
+    // 200 OK containing JSON object of the deleted listing if successful.
+    // 404 Not Found if the id does not correspond to any existing listing.
+    // 500 Internal Server Error if failed to retrieve listings.
+    app.delete('/api/listings/:id', isAuthenticated, function(req, res, next) {
+        Listing.deleteOne({_id: req.params.id}, function(err, result) {
+            if (result) {
+                return res.status(500).end('Unable to retrieve listings.');
+            }
+            if (result.n == 0) {
+                return res.status(404).end(
+                    'No listing with id: ' + req.params.id + ' exists.'
+                );
+            }
+            return res.json({
+                _id: req.params.id,
+            });
+        });
+    });
+
     const http = require('http');
     const PORT = process.env.PORT || config.port;
     http.createServer(app).listen(PORT, function(err) {
         if (err) console.log(err);
         else console.log('HTTP server on http://localhost:%s', PORT);
-    });
-});
-
-// Create
-
-// Create an image
-//
-// Example usage:
-// curl -X POST -F "picture=@/path/to/image" -F "title=Hello" http://localhost:3000/api/images/
-//
-// Returns:
-// 200 OK containing JSON object of the image that was created if sucessful.
-// 500 Internal Server Error if failed to create image.
-app.post('/api/images/', upload.single('picture'), isAuthenticated, function (req, res, next) {
-    cloudinary.v2.uploader.upload(req.file.path, { folder: "uploads" },
-        function (error, result) {
-            images.insert({ picture: result, author: req.user._id, title: req.body.title }, function (err, doc) {
-                if (err) return res.status(500).end("Unable to create image");
-                return res.json(doc);
-            });
-        });
-});
-
-// Create a comment
-//
-// Example usage:
-// curl -X POST -H "Content-Type: application/json" -d '{"imageId": "aValidId", "content": "Hello!"}' http://localhost:3000/api/comments/
-//
-// Returns:
-// 200 OK containing JSON object of the comment that was created if successful.
-// 404 Not Found Error if the imageId does not correspond to any existing image.
-// 500 Internal Server Error if failed to retrieve image or create comment.
-app.post('/api/comments/', isAuthenticated, function (req, res, next) {
-    // Check if image that the comment is commenting on exists
-    images.count({ _id: ObjectID(req.body.imageId) }, function (err, count) {
-        if (err) return res.status(500).end("Unable to retrieve image");
-        if (count == 0) return res.status(404).end("ImageId:" + req.body.imageId + " does not exists");
-        comments.insert({ imageId: req.body.imageId, author: req.user._id, content: req.body.content, date: new Date() }, function (err, doc) {
-            if (err) return res.status(500).end("Unable to create comment");
-            return res.json(doc);
-        });
-    });
-});
-
-// Read
-
-// Returns a list of all the usernames.
-//
-// Example usage:
-// curl -X GET -b cookie.txt http://localhost:3000/api/users
-//
-// Returns:
-// 200 OK containing array of usernames if successful.
-// 500 Internal Server Error if failed to retrieve users.
-app.get('/api/users', isAuthenticated, function (req, res, next) {
-    users.find({}).then(function (docs) {
-        return res.json(docs.map(function (user) {
-            return user._id;
-        }));
-    });
-});
-
-// Returns all imageIds of images for a given user.
-//
-// Example usage:
-// curl -X GET -H "Content-Type: application/json" -b cookie.txt http://localhost:3000/api/users/alice
-//
-// Returns:
-// 200 OK containing array of imageIds of all images if successful.
-// 500 Internal Server Error if failed to retrieve images.
-app.get('/api/users/:username', isAuthenticated, function (req, res, next) {
-    images.find({ author: req.params.username }, { sort: { createdAt: -1 } })
-    .then(function (docs) {
-        return res.json(docs.map(function (elem) {
-            return elem._id;
-        }));
-    });
-});
-
-// Gets an image.
-//
-// Example usage:
-// curl -X GET http://localhost:3000/api/images/aValidId
-//
-// Returns:
-// 200 OK containing JSON object of the image if successful.
-// 404 Not Found Error if the imageId does not correspond to any existing image.
-// 500 Internal Server Error if failed to retrieve image.
-app.get('/api/images/:id/', isAuthenticated, function (req, res, next) {
-    images.findOne({ _id: ObjectID(req.params.id) }, function (err, doc) {
-        if (err) return res.status(500).end("Unable to retrieve image");
-        if (doc == null) return res.status(404).end("ImageId:" + req.params.id + " does not exists");
-        return res.json(doc);
-    });
-});
-
-// Gets the image file.
-//
-// Example usage:
-// curl -X GET http://localhost:3000/api/images/aValidId/picture/
-//
-// Returns:
-// 200 OK containing file of the image if successful.
-// 404 Not Found Error if the imageId does not correspond to any existing image.
-// 500 Internal Server Error if failed to retrieve image.
-app.get('/api/images/:id/picture/', isAuthenticated, function (req, res, next) {
-    images.findOne({ _id: ObjectID(req.params.id) }, function(err, doc) {
-		if (err) return res.status(500).end("Unable to retrieve image");
-        if (doc == null) return res.status(404).end("ImageId:" + req.params.id + " does not exists");
-        request(doc.picture.url).pipe(res);
-    });
-});
-
-// Get comments for an image.
-//
-// Example usage:
-// curl -X GET http://localhost:3000/api/comments/aValidId
-//
-// Returns:
-// 200 OK containing array of JSON objects, sorted by latest creation date, that correspond to the comments of the image.
-// 404 Not Found Error if the imageId does not correspond to any existing image.
-// 500 Internal Server Error if failed to retrieve comments (or image).
-app.get('/api/comments/:imageId/', isAuthenticated, function (req, res, next) {
-    var offset = req.query.offset ? parseInt(req.query.offset) : 0;
-    var limit = req.query.limit ? parseInt(req.query.limit) : 10;
-    images.count({ _id: ObjectID(req.params.imageId) }, function (err, count) {
-        if (err) return res.status(500).end("Unable to retrieve image");
-        if (count == 0) return res.status(404).end("ImageId:" + req.params.imageId + " does not exists");
-        comments.find({ imageId: req.params.imageId },
-            { skip: offset, limit: limit, sort: { date: -1 } })
-            .then(function (docs) {
-            return res.json(docs);
-        });
-    });
-});
-
-// Delete
-
-// Deletes an image.
-//
-// Example usage:
-// curl -X DELETE http://localhost:3000/api/images/aValidId
-//
-// Returns:
-// 200 OK containing JSON object of the image that was deleted.
-// 403 Forbidden if current session user is not the author of the image.
-// 404 Not Found Error if the id does not correspond to any existing image.
-// 500 Internal Server Error if failed to delete the image.
-app.delete('/api/images/:id', isAuthenticated, function (req, res, next) {
-    images.findOne({ _id: ObjectID(req.params.id) }, function (err, doc) {
-        if (doc == null) return res.status(404).end("ImageId:" + req.params.id + " does not exists");
-        if (doc.author !== req.user._id) return res.status(403).end("Not authorized");
-        cloudinary.v2.uploader.destroy(doc.picture.public_id, function(error, result){
-            if (err) return res.status(500).end("Unable to delete image");
-        });
-        images.remove({ _id: ObjectID(req.params.id) }, function(err, numDeleted) {
-            if (err) return res.status(500).end("Unable to delete image");
-            comments.remove({ imageId: req.params.id }, { multi: true }, function (err, numRemoved) {
-                if (err) res.status(500).end("Unable to delete comments");
-                return res.json(doc);
-            });
-        });
-    });
-});
-
-// Deletes a comment.
-//
-// Example usage:
-// curl -X DELETE http://localhost:3000/api/comments/aValidCommentId
-//
-// Returns:
-// 200 OK containing JSON object of the comment that was deleted.
-// 403 Forbidden if the current session user is not the author of the comment or image.
-// 404 Not Found Error if the commentId does not correspond to any existing comment.
-// 500 Internal Server Error if failed to delete the comment.
-app.delete('/api/comments/:id', isAuthenticated, function (req, res, next) {
-    comments.findOne({ _id: ObjectID(req.params.id) }, function (err, doc) {
-        if (err) return res.status(500).end("Unable to retrieve comment");
-        if (doc == null) return res.status(404).end("CommentId:" + req.params.id + " does not exists");
-        images.findOne({ _id: ObjectID(doc.imageId)}, function (err, image) {
-            // Allow deletion of comments by comment or image author
-            if (err) return res.status(500).end("Unable to retrieve image");
-            if (doc.author === req.user._id || image.author === req.user._id) {
-                comments.remove({ _id: ObjectID(req.params.id) }, function (err, numDeleted) {
-                    if (err) return res.status(500).end("Unable to delete comment");
-                    return res.json(doc);
-                });
-            } else {
-                return res.status(403).end("Not authorized");
-            }
-        });
     });
 });

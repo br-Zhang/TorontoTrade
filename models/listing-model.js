@@ -16,6 +16,11 @@ const listingSchema = new mongoose.Schema({
     },
     image_url: String,
     image_id: String,
+    userId: mongoose.SchemaTypes.ObjectId,
 });
+
+listingSchema.methods.priceToString = function() {
+    return (this.get('price' ) / 100).toFixed(2);
+};
 
 module.exports = mongoose.model('Listing', listingSchema);
