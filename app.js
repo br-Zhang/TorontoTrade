@@ -314,11 +314,6 @@ mdb.once('open', function() {
         });
     });
 
-    // TODO: Mark listing as sold. Create some sort of communication channel.
-    app.post('/api/purchase/:id', isAuthenticated, function(req, res, next) {
-
-    });
-
     // Deletes an existing listing.
     //
     // Returns:
@@ -377,7 +372,6 @@ mdb.once('open', function() {
     });
 
     app.get('/purchase/:id', isAuthenticated, function(req, res, next) {
-        // TODO: Display confirmation page
         Listing.findById(req.params.id).exec(function(err, listing) {
             if (err) {
                 return res.status(500).end('Unable to retrieve listings.');
@@ -407,6 +401,9 @@ mdb.once('open', function() {
                         console.log(err);
                         return res.status(500).end('Unable to create order.');
                     }
+
+                    // TODO: Mark listing as sold.
+                    // Create some sort of communication channel.
                     return res.render('purchase', {
                         id: order.id,
                         listingId: order.listingId,
